@@ -1,16 +1,17 @@
-
 #Cleanup Env
 
 docker rmi -f abhisheknn/dockeragent
 docker rmi -f abhisheknn/kafkafirstlevelproducer
 docker rmi -f abhisheknn/containerid-to-imageid
 docker rmi -f abhisheknn/elasticsearchsink
+docekr rmi -f abhisheknn/container-to-mount
 
 docker rm -f dockeragent
 docker rm -f kafkafirstlevelproducer
 docker rm -f containerid-to-imageid
-docekr rm -f elasticsearchsink
-docekr rm -f container-to-mount
+docker rm -f elasticsearchsink
+docker rm -f container-to-mount
+docker rm -f redis
 
 
 
@@ -26,10 +27,12 @@ cd kafka-docker && docker-compose up -d  && cd ..
 ipOfMachine="$(ifconfig | grep -A 1 'ens160' | tail -1 | cut -d ':' -f 2 | cut -d ' ' -f 1)"
 kafkaBrokerport="$(docker inspect kafkadocker_kafka_1  | grep HostPort | sort | uniq | grep -o [0-9]*)"
 kafkabroker="$ipOfMachine:$kafkaBrokerport"
+
+docker run  --name kafkafirstlevelproducer  -p 8003:8003 -e KAFKABROKERS="$kafkabroker" -e TOPICNAME="container_details" abhisheknn/kafkafirstlevelproducer
+
 kafkaFirstLevelProducerport="$(docker inspect kafkafirstlevelproducer  | grep HostPort | sort | uniq | grep -o [0-9]*)"
 microendpoint="$ipOfMachine:$kafkaFirstLevelProducerport"
 hostname="$(hostname)"
-docker run  --name kafkafirstlevelproducer  -p 8003:8003 -e KAFKABROKERS="$kafkabroker" -e TOPICNAME="container_details" abhisheknn/kafkafirstlevelproducer
 
 docker run -d --name container-list-to-stream -e KAFKABROKERS="$kafkabroker" abhisheknn/container-list-to-stream
 docker run -d --name containerid-to-imageid -e KAFKABROKERS="$kafkabroker" abhisheknn/containerid-to-imageid
@@ -37,26 +40,30 @@ docker run -d --name container-to-mount -e KAFKABROKERS="$kafkabroker" abhishekn
 #docker run -d --name mongodbsink -e KAFKABROKER="$kafkabroker" -e MONGODB_DATABASE=DockerX -e MONGODBUSERNAME=admin -e MONGODBPASSWORD=admin -e MONGODBPORT=27017 -e MONGODBHOST="$ipOfMachine"  abhisheknn/mongodbsink
 
 
-
+sudo sysctl -w vm.max_map_count=262144
 #03 Deploy ElasticSerach and Grafana
 
 docker network create mybridge
 cd elasticsearch && docker-compose up -d && cd ..
 docker run -d -p 3000:3000 --name=grafana -e "GF_SECURITY_ADMIN_PASSWORD=secret" grafana/grafana
-docker network connect mybridge elasticsearch_elasticsearch_1
+docker network connect mybridge devdeployments_elasticsearch_1
 docker network connect mybridge grafana
 
 
 #04 Deploy  ElasticSerach Sink
 
 ELASTICSEARCHHOST="$ipOfMachine"
-ELASTICSEARCHPORT="$(docker inspect elasticsearch_elasticsearch_1  | grep HostPort | sort | uniq | grep -o [0-9]*)"
+elasticsearchports="$(docker inspect devdeployments_elasticsearch_1  | grep HostPort | sort | uniq | grep -o [0-9]*)"
+elasticsearchportarray=(${elasticsearchports// //})
+ELASTICSEARCHPORT=${elasticsearchportarray[0]}
 docker run -d --name=elasticsearchsink -e KAFKABROKER="$kafkabroker" -e ELASTICSEARCHHOST="$ELASTICSEARCHHOST" -e ELASTICSEARCHPORT="$ELASTICSEARCHPORT" abhisheknn/elasticsearchsink
 
 
 
 #X-Agent
 #00 Deploy Redis
+
 docker run --name redis -p 6379:6379 -d redis 
 
-docker run -d -v /var/run/docker.sock:/var/run/docker.sock -e MICRO_ENDPOINT="$microendpoint" -e HOSTNAME="$hostname" -e REDISHOST="$ipOfMachine" -e REDISPORT=6379  abhisheknn/dockeragent
+docker run -d --name dockeragent -v /var/run/docker.sock:/var/run/docker.sock -e MICRO_ENDPOINT="$microendpoint" -e HOSTNAME="$hostname" -e REDISHOST="$ipOfMachine" -e REDISPORT=6379  abhisheknn/dockeragent
+
