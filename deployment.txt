@@ -4,7 +4,7 @@ docker rmi -f abhisheknn/dockeragent
 docker rmi -f abhisheknn/kafkafirstlevelproducer
 docker rmi -f abhisheknn/containerid-to-imageid
 docker rmi -f abhisheknn/elasticsearchsink
-docekr rmi -f abhisheknn/container-to-mount
+docker rmi -f abhisheknn/container-to-mount
 
 docker rm -f dockeragent
 docker rm -f kafkafirstlevelproducer
