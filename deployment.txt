@@ -39,6 +39,14 @@ docker run -d --name containerid-to-imageid -e KAFKABROKERS="$kafkabroker" abhis
 docker run -d --name container-to-mount -e KAFKABROKERS="$kafkabroker" abhisheknn/container-to-mount
 #docker run -d --name mongodbsink -e KAFKABROKER="$kafkabroker" -e MONGODB_DATABASE=DockerX -e MONGODBUSERNAME=admin -e MONGODBPASSWORD=admin -e MONGODBPORT=27017 -e MONGODBHOST="$ipOfMachine"  abhisheknn/mongodbsink
 
+#Cassandra on Kubernetes
+git clone https://github.com/abhisheknn/Scalable-Cassandra-deployment-on-Kubernetes.git
+cd /Scalable-Cassandra-deployment-on-Kubernetes/scripts
+./quickstart.sh
+
+#Token Manager
+docker run --name tokenmanager -e CASSANDRA_HOST=$ipOfMachine -e CASSANDRA_PORT=cassandraport -p 8080:8080 -d abhisheknn/token-manager
+
 
 sudo sysctl -w vm.max_map_count=262144
 #03 Deploy ElasticSerach and Grafana
