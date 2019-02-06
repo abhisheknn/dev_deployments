@@ -31,7 +31,7 @@ kafkabroker="$ipOfMachine:$kafkaBrokerport"
 docker run  --name kafkafirstlevelproducer  -p 8003:8003 -e KAFKABROKERS="$kafkabroker" -e TOPICNAME="container_details" abhisheknn/kafkafirstlevelproducer
 
 kafkaFirstLevelProducerport="$(docker inspect kafkafirstlevelproducer  | grep HostPort | sort | uniq | grep -o [0-9]*)"
-microendpoint="$ipOfMachine:$kafkaFirstLevelProducerport"
+microendpoint="$ipOfMachine"
 hostname="$(hostname)"
 
 docker run -d --name container-list-to-stream -e KAFKABROKERS="$kafkabroker" abhisheknn/container-list-to-stream
