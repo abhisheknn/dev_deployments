@@ -45,7 +45,13 @@ cd /Scalable-Cassandra-deployment-on-Kubernetes/scripts
 ./quickstart.sh
 
 #Token Manager
-docker run --name tokenmanager -e CASSANDRA_HOST=$ipOfMachine -e CASSANDRA_PORT=cassandraport -p 8080:8080 -d abhisheknn/token-manager
+docker run --name tokenmanager -e CASSANDRA_HOST=$ipOfMachine -e CASSANDRA_PORT=cassandraport -p 8004:8004 -d abhisheknn/token-manager
+
+
+#Deploy Nginx 
+sed -i 's/microendpoint/'"$ipOfMachine"'/g' ~/nginx/default.conf
+docker run --name docker-nginx -p 80:80 -v ~/nginx/default.conf:/etc/nginx/conf.d/default.conf -d nginx
+
 
 
 sudo sysctl -w vm.max_map_count=262144
