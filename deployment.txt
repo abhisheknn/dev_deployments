@@ -75,9 +75,6 @@ docker run -d --name=elasticsearchsink -e KAFKABROKER="$kafkabroker" -e ELASTICS
 
 
 #X-Agent
-#00 Deploy Redis
 
-docker run --name redis -p 6379:6379 -d redis 
-
-docker run -d --name dockeragent -v /var/run/docker.sock:/var/run/docker.sock -e MICRO_ENDPOINT="$microendpoint" -e HOSTNAME="$hostname" -e REDISHOST="$ipOfMachine" -e REDISPORT=6379  abhisheknn/dockeragent
+docker run -d --name dockeragent -v /var/run/docker.sock:/var/run/docker.sock -e MICRO_ENDPOINT="$microendpoint" -e HOSTNAME="$hostname" -e MACADDRESS="11:12:13:14:15" abhisheknn/dockeragent
 
