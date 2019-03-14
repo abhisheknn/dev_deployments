@@ -4,6 +4,7 @@ docker rmi -f abhisheknn/dockeragent
 docker rmi -f abhisheknn/kafkafirstlevelproducer
 docker rmi -f abhisheknn/containerid-to-imageid
 docker rmi -f abhisheknn/elasticsearchsink
+docker rmi -f abhisheknn/cassandrasink
 docker rmi -f abhisheknn/container-to-mount
 
 docker rm -f dockeragent
@@ -12,7 +13,7 @@ docker rm -f containerid-to-imageid
 docker rm -f elasticsearchsink
 docker rm -f container-to-mount
 docker rm -f redis
-
+docker rm -f cassandrasink
 
 
 
@@ -47,6 +48,8 @@ cd /Scalable-Cassandra-deployment-on-Kubernetes/scripts
 #Token Manager
 docker run --name tokenmanager -e CASSANDRA_HOST=$ipOfMachine -e CASSANDRA_PORT=cassandraport -p 8004:8004 -d abhisheknn/token-manager
 
+#Cassandra Sink 
+docker run --name cassandrasink -e CASSANDRA_HOST=$cassandrahost -e CASSANDRA_PORT=9042 -e COSUMERTOPICCONFIG='[{"topic":"dockerx.container_details","table":"dockerx.container_details"},{"topic":"dockerx.container_to_mount","table":"dockerx.container_to_mount"},{"topic":"dockerx.network_details","table":"dockerx.network_details"}]' -e KAFKA_BROKER=$kafkabroker  abhisheknn/cassandrasink
 
 #Deploy Nginx 
 sed -i 's/microendpoint/'"$ipOfMachine"'/g' ~/nginx/default.conf
