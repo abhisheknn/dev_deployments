@@ -31,7 +31,7 @@ ipOfMachine="$(ifconfig | grep -A 1 'ens160' | tail -1 | cut -d ':' -f 2 | cut -
 kafkaBrokerport="$(docker inspect kafkadocker_kafka_1  | grep HostPort | sort | uniq | grep -o [0-9]*)"
 kafkabroker="$ipOfMachine:$kafkaBrokerport"
 
-docker run  --name kafkafirstlevelproducer  -p 8003:8003 -e KAFKABROKERS="$kafkabroker" -e TOPICNAME="container_details" abhisheknn/kafkafirstlevelproducer
+docker run  --name kafkafirstlevelproducer  -p 8003:8003 -e KAFKABROKERS="$kafkabroker" -e TOKENMANAGERURL="$ipOfMachine" abhisheknn/kafkafirstlevelproducer
 
 kafkaFirstLevelProducerport="$(docker inspect kafkafirstlevelproducer  | grep HostPort | sort | uniq | grep -o [0-9]*)"
 microendpoint="$ipOfMachine"
