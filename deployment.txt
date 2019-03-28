@@ -7,6 +7,8 @@ docker rmi -f abhisheknn/elasticsearchsink
 docker rmi -f abhisheknn/cassandrasink
 docker rmi -f abhisheknn/container-to-mount
 docker rmi -f abhisheknn/network-list-to-stream
+docker rmi -f abhisheknn/policy-manager
+docker rmi -f abhisheknn/token-manager
 
 
 docker rm -f dockeragent
@@ -17,6 +19,8 @@ docker rm -f container-to-mount
 docker rm -f redis
 docker rm -f cassandrasink
 docker rm -f network-list-to-stream
+docker rm -f policy-manager
+docker rm -f token-manager
 
 
 #X-Server
@@ -51,7 +55,7 @@ cd /Scalable-Cassandra-deployment-on-Kubernetes/scripts
 ./quickstart.sh
 
 #Token Manager
-docker run --name tokenmanager -e CASSANDRA_HOST=$ipOfMachine -e CASSANDRA_PORT=cassandraport -p 8004:8004 -d abhisheknn/token-manager
+docker run --name token-manager -e CASSANDRA_HOST=$ipOfMachine -e CASSANDRA_PORT=cassandraport -p 8004:8004 -d abhisheknn/token-manager
 
 #Policy Manager
 docker run --name policy-manager -e CASSANDRA_HOST=$ipOfMachine -e CASSANDRA_PORT=cassandraport -p 8005:8080 -d abhisheknn/policy-manager
