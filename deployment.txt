@@ -53,6 +53,9 @@ cd /Scalable-Cassandra-deployment-on-Kubernetes/scripts
 #Token Manager
 docker run --name tokenmanager -e CASSANDRA_HOST=$ipOfMachine -e CASSANDRA_PORT=cassandraport -p 8004:8004 -d abhisheknn/token-manager
 
+#Policy Manager
+docker run --name policy-manager -e CASSANDRA_HOST=$ipOfMachine -e CASSANDRA_PORT=cassandraport -p 8005:8080 -d abhisheknn/policy-manager
+
 #Cassandra Sink 
 docker run --name cassandrasink -e CASSANDRA_HOST=$cassandrahost -e CASSANDRA_PORT=9042 -e COSUMERTOPICCONFIG='[{"topic":"dockerx.container_details","table":"dockerx.container_details"},{"topic":"dockerx.container_to_mount","table":"dockerx.container_to_mount"},{"topic":"dockerx.network_details","table":"dockerx.network_details"}]' -e KAFKA_BROKER=$kafkabroker  abhisheknn/cassandrasink
 
