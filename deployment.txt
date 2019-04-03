@@ -60,6 +60,16 @@ docker run --name token-manager -e CASSANDRA_HOST=$ipOfMachine -e CASSANDRA_PORT
 #Policy Manager
 docker run --name policy-manager -e CASSANDRA_HOST=$ipOfMachine -e CASSANDRA_PORT=cassandraport -p 8005:8080 -d abhisheknn/policy-manager
 
+
+#HiveMq for MQTT Broker
+docker run --name mqttbroker -p 8080:8080 -p 1883:1883 hivemq/hivemq4
+
+mqttBrokerport="$(docker inspect mqttbroker  | grep HostPort | sort | uniq | grep -o [0-9]*)"
+mqttbroker="$ipOfMachine:$mqttbroker"
+
+#C2-System
+docker run --name c2-system  -e MQTTBROKER=$mqttbroker -e MQTTCLIENTID=dev -d -p 8006:8080 abhisheknn/c2-system
+
 #Cassandra Sink 
 docker run --name cassandrasink -e CASSANDRA_HOST=$cassandrahost -e CASSANDRA_PORT=9042 -e COSUMERTOPICCONFIG='[{"topic":"dockerx.container_details","table":"dockerx.container_details"},{"topic":"dockerx.container_to_mount","table":"dockerx.container_to_mount"},{"topic":"dockerx.network_details","table":"dockerx.network_details"}]' -e KAFKA_BROKER=$kafkabroker  abhisheknn/cassandrasink
 
@@ -91,5 +101,5 @@ docker run -d --name=elasticsearchsink -e KAFKABROKER="$kafkabroker" -e ELASTICS
 
 #X-Agent
 
-docker run -d --name dockeragent -v /var/run/docker.sock:/var/run/docker.sock -e MICRO_ENDPOINT="$microendpoint" -e HOSTNAME="$hostname" -e MACADDRESS="11:12:13:14:15" abhisheknn/dockeragent
+docker run -d --name dockeragent -v /var/run/docker.sock:/var/run/docker.sock -e MICRO_ENDPOINT="$microendpoint" -e HOSTNAME="$hostname" -e MACADDRESS="11:12:13:14:15" TENANTID="dockerx" MQTTBROKER=$mqttbroker abhisheknn/dockeragent
 
