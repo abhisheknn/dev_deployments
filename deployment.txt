@@ -54,6 +54,10 @@ git clone https://github.com/abhisheknn/Scalable-Cassandra-deployment-on-Kuberne
 cd /Scalable-Cassandra-deployment-on-Kubernetes/scripts
 ./quickstart.sh
 
+#MySQL
+docker run --name mysqldb -e MYSQL_USER=ab -p 3306:3306 -p 33060:33060 -e MYSQL_PASSWORD=xxxx -e MYSQL_ROOT_PASSWORD=xxxx -e MYSQL_DATABASE=dockerx -d mysql:latest
+
+
 #Token Manager
 docker run --name token-manager -e CASSANDRA_HOST=$ipOfMachine -e CASSANDRA_PORT=cassandraport -p 8004:8004 -d abhisheknn/token-manager
 
